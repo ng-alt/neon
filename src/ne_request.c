@@ -52,6 +52,7 @@
 #include "ne_uri.h"
 
 #include "ne_private.h"
+#include "webdav_base.h"   //add by alan
 
 #define SOCK_ERR(req, op, msg) do { ssize_t sret = (op); \
 if (sret < 0) return aborted(req, msg, sret); } while (0)
@@ -283,6 +284,7 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
 {
     ne_request *req = userdata;
 
+
     if (count) {
         ssize_t ret;
 
@@ -380,6 +382,10 @@ static int send_request_body(ne_request *req, int retry)
     }
     
     while ((bytes = req->body_cb(req->body_ud, buffer, sizeof buffer)) > 0) {
+    	//next 3 rows add by alan
+    	if(exit_loop == 1){
+    		return NE_WEBDAV_QUIT;
+    	}
 	int ret = ne_sock_fullwrite(sess->socket, buffer, bytes);
         if (ret < 0) {
             int aret = aborted(req, _("Could not send request body"), ret);
@@ -1357,11 +1363,16 @@ int ne_read_response_to_fd(ne_request *req, int fd)
 {
     ssize_t len;
 
+
     while ((len = ne_read_response_block(req, req->respbuf, 
                                          sizeof req->respbuf)) > 0) {
         const char *block = req->respbuf;
 
         do {
+        	//next 3 rows add by alan
+        	if(exit_loop == 1){
+        		return NE_WEBDAV_QUIT;
+        	}
             ssize_t ret = write(fd, block, len);
             if (ret == -1 && errno == EINTR) {
                 continue;
@@ -1397,6 +1408,7 @@ int ne_request_dispatch(ne_request *req)
     int ret;
     
     do {
+
 	ret = ne_begin_request(req);
         if (ret == NE_OK) ret = ne_discard_response(req);
         if (ret == NE_OK) ret = ne_end_request(req);

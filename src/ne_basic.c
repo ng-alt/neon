@@ -65,6 +65,7 @@ int ne_getmodtime(ne_session *sess, const char *uri, time_t *modtime)
 	ret = NE_ERROR;
     } 
     else if (value) {
+    	//printf("value = %s\n",value);
         *modtime = ne_httpdate_parse(value);
     }
     else {

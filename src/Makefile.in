@@ -30,7 +30,10 @@ LDFLAGS = @LDFLAGS@
 NEON_LINK_FLAGS = @NEON_LINK_FLAGS@
 # Note: don't substitute @LIBS@ in here; during a bundled
 # build of this directory, @LIBS@ may include -lneon.
-LIBS = @NEON_LIBS@ @NEON_LTLIBS@
+#LIBS = @NEON_LIBS@ @NEON_LTLIBS@
+#LIBS = @NEON_LIBS@
+#LIBS = @NEON_LTLIBS@
+#LIBS = -L../../libxml2/.libs -lxml2 -L../../zlib -lz -lm -L../../openssl -lssl
 
 COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS)
 LT_COMPILE = $(LIBTOOL) --quiet --mode=compile $(COMPILE)

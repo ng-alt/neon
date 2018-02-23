@@ -175,6 +175,8 @@ typedef struct in_addr ne_inet_addr;
 
 /* Socket read timeout */
 #define SOCKET_READ_TIMEOUT 120
+/* Socket receive timeout*/
+#define SOCKET_RECEIVE_TIMEOUT 30
 
 /* Critical I/O functions on a socket: useful abstraction for easily
  * handling SSL I/O alongside raw socket I/O. */
@@ -1434,6 +1436,13 @@ int ne_sock_connect(ne_socket *sock,
             return NE_SOCK_ERROR;
         }
     }
+
+#if defined(HAVE_SETSOCKOPT)           //add by alan
+    { /* set the socket read time out. */
+        struct timeval tv = {SOCKET_RECEIVE_TIMEOUT,0};
+        setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO,(char *)&tv, sizeof(tv));
+    }
+#endif
 
 #if defined(HAVE_SETSOCKOPT) && (defined(TCP_NODELAY) || defined(WIN32))
     { /* Disable the Nagle algorithm. */
